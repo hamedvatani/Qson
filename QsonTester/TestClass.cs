@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 
 namespace QsonTester
 {
@@ -62,7 +64,7 @@ namespace QsonTester
                 FloatData = (float) 12.3,
                 DoubleData = -45.78,
                 DecimalData = (decimal) 123.456,
-                DateTimeData = DateTime.Now,
+                DateTimeData = new DateTime(2000, 2, 2),
                 StringData = "Test String",
                 NBoolData = true,
                 NCharData = null,
@@ -143,7 +145,7 @@ namespace QsonTester
                 FloatData = (float) 12.3,
                 DoubleData = -45.78,
                 DecimalData = (decimal) 123.456,
-                DateTimeData = DateTime.Now,
+                DateTimeData = new DateTime(2000, 2, 2),
                 StringData = "Test String",
                 NBoolData = null,
                 NCharData = 'a',
@@ -158,7 +160,7 @@ namespace QsonTester
                 NFloatData = null,
                 NDoubleData = -45.78,
                 NDecimalData = null,
-                NDateTimeData = DateTime.Now,
+                NDateTimeData = new DateTime(2000, 2, 2),
                 IntListData = new List<int> {1, 2, 3, 4, 5},
                 IntArrayData = new[] {6, 7, 8, 9, 10},
                 StringListData = new List<string> {"123", "abc", null, "Test"},
@@ -209,56 +211,173 @@ namespace QsonTester
 
         public bool IsEqual(TestClass c)
         {
-            var retVal = true;
-            retVal &= (BoolData == c.BoolData);
-            retVal &= (BoolData == c.BoolData);
-            retVal &= (BoolData == c.BoolData);
-            retVal &= (BoolData == c.BoolData);
-            retVal &= (BoolData == c.BoolData);
-
-
-            return retVal;
-
-
-            // BoolData  
-            // CharData  
-            // SbyteData  
-            // ByteData  
-            // ShortData  
-            // UshortData  
-            // IntData  
-            // UintData  
-            // LongData  
-            // UlongData  
-            // FloatData  
-            // DoubleData  
-            // DecimalData  
-            // DateTime DateTimeData  
-            // string StringData  
-            // bool? NBoolData  
-            // char? NCharData  
-            // sbyte? NSbyteData  
-            // byte? NByteData  
-            // short? NShortData  
-            // ushort? NUshortData  
-            // int? NIntData  
-            // uint? NUintData  
-            // long? NLongData  
-            // ulong? NUlongData  
-            // float? NFloatData  
-            // double? NDoubleData  
-            // decimal? NDecimalData  
-            // DateTime? NDateTimeData  
-            // List<int> IntListData  
-            // int[] IntArrayData  
-            // List<string> StringListData  
-            // string[] StringArrayData  
-            // Person Person  
-            // List<Person> PersonList  
-            // Person[] PersonArray  
+            if (BoolData != c.BoolData) return false;
+            if (CharData != c.CharData) return false;
+            if (SbyteData != c.SbyteData) return false;
+            if (ByteData != c.ByteData) return false;
+            if (ShortData != c.ShortData) return false;
+            if (UshortData != c.UshortData) return false;
+            if (IntData != c.IntData) return false;
+            if (UintData != c.UintData) return false;
+            if (LongData != c.LongData) return false;
+            if (UlongData != c.UlongData) return false;
+            if (Math.Abs(FloatData - c.FloatData) > .001) return false;
+            if (Math.Abs(DoubleData - c.DoubleData) > .001) return false;
+            if (DecimalData != c.DecimalData) return false;
+            if (DateTimeData != c.DateTimeData) return false;
+            if (StringData != c.StringData) return false;
 
 
 
+            if (NBoolData == null && c.NBoolData != null) return false;
+            if (NBoolData != null && c.NBoolData == null) return false;
+            if (NBoolData != null && c.NBoolData != null && NBoolData.Value != c.NBoolData.Value) return false;
+            if (NCharData == null && c.NCharData != null) return false;
+            if (NCharData != null && c.NCharData == null) return false;
+            if (NCharData != null && c.NCharData != null && NCharData.Value != c.NCharData.Value) return false;
+            if (NSbyteData == null && c.NSbyteData != null) return false;
+            if (NSbyteData != null && c.NSbyteData == null) return false;
+            if (NSbyteData != null && c.NSbyteData != null && NSbyteData.Value != c.NSbyteData.Value) return false;
+            if (NByteData == null && c.NByteData != null) return false;
+            if (NByteData != null && c.NByteData == null) return false;
+            if (NByteData != null && c.NByteData != null && NByteData.Value != c.NByteData.Value) return false;
+            if (NShortData == null && c.NShortData != null) return false;
+            if (NShortData != null && c.NShortData == null) return false;
+            if (NShortData != null && c.NShortData != null && NShortData.Value != c.NShortData.Value) return false;
+            if (NUshortData == null && c.NUshortData != null) return false;
+            if (NUshortData != null && c.NUshortData == null) return false;
+            if (NUshortData != null && c.NUshortData != null && NUshortData.Value != c.NUshortData.Value) return false;
+            if (NIntData == null && c.NIntData != null) return false;
+            if (NIntData != null && c.NIntData == null) return false;
+            if (NIntData != null && c.NIntData != null && NIntData.Value != c.NIntData.Value) return false;
+            if (NUintData == null && c.NUintData != null) return false;
+            if (NUintData != null && c.NUintData == null) return false;
+            if (NUintData != null && c.NUintData != null && NUintData.Value != c.NUintData.Value) return false;
+            if (NLongData == null && c.NLongData != null) return false;
+            if (NLongData != null && c.NLongData == null) return false;
+            if (NLongData != null && c.NLongData != null && NLongData.Value != c.NLongData.Value) return false;
+            if (NUlongData == null && c.NUlongData != null) return false;
+            if (NUlongData != null && c.NUlongData == null) return false;
+            if (NUlongData != null && c.NUlongData != null && NUlongData.Value != c.NUlongData.Value) return false;
+            if (NFloatData == null && c.NFloatData != null) return false;
+            if (NFloatData != null && c.NFloatData == null) return false;
+            if (NFloatData != null && c.NFloatData != null && Math.Abs(NFloatData.Value - c.NFloatData.Value) > .001) return false;
+            if (NDoubleData == null && c.NDoubleData != null) return false;
+            if (NDoubleData != null && c.NDoubleData == null) return false;
+            if (NDoubleData != null && c.NDoubleData != null && Math.Abs(NDoubleData.Value - c.NDoubleData.Value) > .001) return false;
+            if (NDecimalData == null && c.NDecimalData != null) return false;
+            if (NDecimalData != null && c.NDecimalData == null) return false;
+            if (NDecimalData != null && c.NDecimalData != null && NDecimalData.Value != c.NDecimalData.Value) return false;
+            if (NDateTimeData == null && c.NDateTimeData != null) return false;
+            if (NDateTimeData != null && c.NDateTimeData == null) return false;
+            if (NDateTimeData != null && c.NDateTimeData != null && NDateTimeData.Value != c.NDateTimeData.Value) return false;
+
+            if (!IntListIsEqual(IntListData, c.IntListData)) return false;
+            if (!IntArrayIsEqual(IntArrayData, c.IntArrayData)) return false;
+            if (!StringListIsEqual(StringListData, c.StringListData)) return false;
+            if (!StringArrayIsEqual(StringArrayData, c.StringArrayData)) return false;
+
+            if (!Person.IsEqual(c.Person)) return false;
+            if (!PersonListIsEqual(PersonList, c.PersonList)) return false;
+            if (!PersonArrayIsEqual(PersonArray, c.PersonArray)) return false;
+
+            return true;
+        }
+
+        private bool IntListIsEqual(List<int> list1, List<int> list2)
+        {
+            if (list1 == null && list2 == null)
+                return true;
+            if (list1 != null && list2 != null)
+            {
+                if (list1.Count != list2.Count)
+                    return false;
+                for (int i = 0; i < list1.Count; i++)
+                    if (list1[i] != list2[i])
+                        return false;
+                return true;
+            }
+            return false;
+        }
+
+        private bool StringListIsEqual(List<string> list1, List<string> list2)
+        {
+            if (list1 == null && list2 == null)
+                return true;
+            if (list1 != null && list2 != null)
+            {
+                if (list1.Count != list2.Count)
+                    return false;
+                for (int i = 0; i < list1.Count; i++)
+                    if (list1[i] != list2[i])
+                        return false;
+                return true;
+            }
+            return false;
+        }
+
+        private bool PersonListIsEqual(List<Person> list1, List<Person> list2)
+        {
+            if (list1 == null && list2 == null)
+                return true;
+            if (list1 != null && list2 != null)
+            {
+                if (list1.Count != list2.Count)
+                    return false;
+                for (int i = 0; i < list1.Count; i++)
+                    if (!list1[i].IsEqual(list2[i]))
+                        return false;
+                return true;
+            }
+            return false;
+        }
+
+        private bool IntArrayIsEqual(int[] list1, int[] list2)
+        {
+            if (list1 == null && list2 == null)
+                return true;
+            if (list1 != null && list2 != null)
+            {
+                if (list1.Length != list2.Length)
+                    return false;
+                for (int i = 0; i < list1.Length; i++)
+                    if (list1[i] != list2[i])
+                        return false;
+                return true;
+            }
+            return false;
+        }
+
+        private bool StringArrayIsEqual(string[] list1, string[] list2)
+        {
+            if (list1 == null && list2 == null)
+                return true;
+            if (list1 != null && list2 != null)
+            {
+                if (list1.Length != list2.Length)
+                    return false;
+                for (int i = 0; i < list1.Length; i++)
+                    if (list1[i] != list2[i])
+                        return false;
+                return true;
+            }
+            return false;
+        }
+
+        private bool PersonArrayIsEqual(Person[] list1, Person[] list2)
+        {
+            if (list1 == null && list2 == null)
+                return true;
+            if (list1 != null && list2 != null)
+            {
+                if (list1.Length != list2.Length)
+                    return false;
+                for (int i = 0; i < list1.Length; i++)
+                    if (!list1[i].IsEqual(list2[i]))
+                        return false;
+                return true;
+            }
+            return false;
         }
     }
 }
