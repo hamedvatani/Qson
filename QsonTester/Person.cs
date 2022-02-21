@@ -1,5 +1,8 @@
-﻿namespace QsonTester
+﻿using System;
+
+namespace QsonTester
 {
+    [Serializable]
     public class Person
     {
         public string Name { get; set; }

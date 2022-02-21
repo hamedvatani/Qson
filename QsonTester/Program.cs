@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Data.Common;
 using System.Linq;
+using System.Text;
 using QsonLibrary;
 
 namespace QsonTester
@@ -10,11 +12,16 @@ namespace QsonTester
     {
         static void Main(string[] args)
         {
-            var c1 = TestClass.CreateSample1();
-            var c2 = TestClass.CreateSample2();
+            Class1 class1 = new Class1
+            {
+                Data1 = 10,
+                Data2 = 20,
+                Data3 = "Sample Text"
+            };
 
-            var b1 = c1.BinarySerialize();
-            var b2 = c2.BinarySerialize();
+            var b = class1.BinarySerialize();
+
+
 
             Console.WriteLine("Hello World!");
         }

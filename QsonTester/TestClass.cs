@@ -5,6 +5,7 @@ using System.Runtime.CompilerServices;
 
 namespace QsonTester
 {
+    [Serializable]
     public class TestClass
     {
         public bool BoolData { get; set; }

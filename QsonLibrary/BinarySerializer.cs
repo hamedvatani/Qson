@@ -1,103 +1,88 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Runtime.Serialization;
+using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
 
 namespace QsonLibrary
 {
     public static class BinarySerializer
     {
-        public static byte[] BinarySerialize(this object data)
+        // public static byte[] BinarySerialize(this object data)
+        // {
+        //     BinaryFormatter binaryFormatter = new BinaryFormatter();
+        //     using (var memoryStream=new MemoryStream())
+        //     {
+        //         binaryFormatter.Serialize(memoryStream, data);
+        //         return memoryStream.ToArray();
+        //     }
+        // }
+        //
+        // public static object BinaryDeserialize(this byte[] data)
+        // {
+        //     using (var memoryStream=new MemoryStream())
+        //     {
+        //         var binaryFormatter = new BinaryFormatter();
+        //         memoryStream.Write(data, 0, data.Length);
+        //         memoryStream.Seek(0, SeekOrigin.Begin);
+        //         return binaryFormatter.Deserialize(memoryStream);
+        //     }
+        // }
+
+        public static byte[] BinarySerialize<T>(this T data)
         {
-            byte[] retVal = Array.Empty<byte>();
+            var retVal = Array.Empty<byte>();
 
-            if (data == null)
-                return retVal;
-
-            var properties = data.GetType().GetProperties().ToList();
+            var properties = typeof(T).GetProperties().ToList();
             properties.Sort((x, y) => String.Compare(x.Name, y.Name, StringComparison.Ordinal));
-
             foreach (var property in properties)
             {
                 var value = property.GetValue(data);
-                var typeCode = Type.GetTypeCode(property.PropertyType);
-                byte[] res = Array.Empty<byte>();
-                switch (typeCode)
-                {
-                    case TypeCode.Boolean:
-                    case TypeCode.Char:
-                    case TypeCode.SByte:
-                    case TypeCode.Byte:
-                    case TypeCode.Int16:
-                    case TypeCode.UInt16:
-                    case TypeCode.Int32:
-                    case TypeCode.UInt32:
-                    case TypeCode.Int64:
-                    case TypeCode.UInt64:
-                    case TypeCode.Single:
-                    case TypeCode.Double:
-                    case TypeCode.Decimal:
-                    case TypeCode.DateTime:
-                        res = value.AtomicToByteArray(typeCode);
-                        break;
-                    case TypeCode.String:
-                        res = value.StringToByteArray(typeCode);
-                        break;
-                    case TypeCode.Object:
-                        if (property.PropertyType.IsGenericType &&
-                            property.PropertyType.GetGenericTypeDefinition() == typeof(Nullable<>))
-                        {
-                            int asd = 0;
-                        }
+                var res = value.ToByteArray(property);
 
-
-                        break;
-                    default:
-                        throw new ArgumentOutOfRangeException();
-                }
+                if (res == null)
+                    throw new Exception($"{property.PropertyType} {property.Name} type not supported");
 
                 var index = retVal.Length;
-                Array.Resize(ref retVal, retVal.Length + res.Length);
+                Array.Resize(ref retVal, index + res.Length);
                 res.CopyTo(retVal, index);
             }
 
             return retVal;
         }
 
-        private static byte[] AtomicToByteArray(this object data, TypeCode typeCode)
+        private static byte[] ToByteArray(this object data, PropertyInfo property)
         {
-            return typeCode switch
-            {
-                TypeCode.Boolean => BitConverter.GetBytes((bool)data),
-                TypeCode.Char => BitConverter.GetBytes((char)data),
-                TypeCode.SByte => BitConverter.GetBytes((sbyte)data),
-                TypeCode.Byte => BitConverter.GetBytes((byte)data),
-                TypeCode.Int16 => BitConverter.GetBytes((short)data),
-                TypeCode.UInt16 => BitConverter.GetBytes((ushort)data),
-                TypeCode.Int32 => BitConverter.GetBytes((int)data),
-                TypeCode.UInt32 => BitConverter.GetBytes((uint)data),
-                TypeCode.Int64 => BitConverter.GetBytes((long)data),
-                TypeCode.UInt64 => BitConverter.GetBytes((ulong)data),
-                TypeCode.Single => BitConverter.GetBytes((float)data),
-                TypeCode.Double => BitConverter.GetBytes((double)data),
-                TypeCode.Decimal => BitConverter.GetBytes(decimal.ToDouble((decimal)data)),
-                TypeCode.DateTime => BitConverter.GetBytes(((DateTime)data).Ticks),
-                _ => throw new Exception("Not Atomic Type")
-            };
+            if (property.PropertyType.IsPrimitive || property.PropertyType == typeof(string))
+                return data.PrimitiveToByteArray(property);
+            // Nullable
+            // List
+            // Array
+            // Custom
+            return null;
         }
 
-        private static byte[] StringToByteArray(this object data, TypeCode typeCode)
+        private static byte[] PrimitiveToByteArray(this object data, PropertyInfo property)
         {
-            if (typeCode != TypeCode.String)
-                throw new Exception("Not String Type");
-            var str = (string) data;
-            int len = str.Length;
-            byte[] lenBytes = BitConverter.GetBytes(len);
-            byte[] strBytes = Encoding.UTF8.GetBytes(str);
-            byte[] retVal = new byte[lenBytes.Length + strBytes.Length];
-            lenBytes.CopyTo(retVal, 0);
-            strBytes.CopyTo(retVal, lenBytes.Length);
-            return retVal;
+            if (property.PropertyType == typeof(int))
+                return BitConverter.GetBytes((int)data);
+            if (property.PropertyType == typeof(long))
+                return BitConverter.GetBytes((long)data);
+            if (property.PropertyType == typeof(string))
+            {
+                var str = (string) data;
+                var len = BitConverter.GetBytes(str.Length);
+                var val = Encoding.UTF8.GetBytes(str);
+                var retVal = new byte[len.Length + val.Length];
+                len.CopyTo(retVal, 0);
+                val.CopyTo(retVal, len.Length);
+                return retVal;
+            }
+
+            return null;
         }
     }
 }
