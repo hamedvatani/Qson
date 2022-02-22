@@ -40,175 +40,13 @@ namespace QsonTester
         public DateTime? NDateTimeData { get; set; }
 
         public List<int> IntListData { get; set; }
-        public int[] IntArrayData { get; set; }
+        // public int[] IntArrayData { get; set; }
         public List<string> StringListData { get; set; }
-        public string[] StringArrayData { get; set; }
+        //public string[] StringArrayData { get; set; }
 
         public Person Person { get; set; }
         public List<Person> PersonList { get; set; }
-        public Person[] PersonArray { get; set; }
-
-        public static TestClass CreateSample1()
-        {
-            return new TestClass
-            {
-                BoolData = true,
-                CharData = 'a',
-                SbyteData = -12,
-                ByteData = 12,
-                ShortData = -34,
-                UshortData = 34,
-                IntData = -1120,
-                UintData = 1120,
-                LongData = -3450,
-                UlongData = 3450,
-                FloatData = (float) 12.3,
-                DoubleData = -45.78,
-                DecimalData = (decimal) 123.456,
-                DateTimeData = new DateTime(2000, 2, 2),
-                StringData = "Test String",
-                NBoolData = true,
-                NCharData = null,
-                NSbyteData = -12,
-                NByteData = null,
-                NShortData = -34,
-                NUshortData = null,
-                NIntData = -1120,
-                NUintData = null,
-                NLongData = -3450,
-                NUlongData = null,
-                NFloatData = (float) 12.3,
-                NDoubleData = null,
-                NDecimalData = (decimal) 123.456,
-                NDateTimeData = null,
-                IntListData = new List<int> {1, 2, 3, 4, 5},
-                IntArrayData = new[] {6, 7, 8, 9, 10},
-                StringListData = new List<string> {"123", "abc", null, "Test"},
-                StringArrayData = new[] {"XYZ", null, "456", "Hello World!"},
-                Person = new Person
-                {
-                    Name = "Ali",
-                    Tels = new[] {"12", "34", "56"}
-                },
-                PersonList = new List<Person>
-                {
-                    new()
-                    {
-                        Name = "John",
-                        Tels = null
-                    },
-                    new()
-                    {
-                        Name = "Mark",
-                        Tels = new[] {"123456"}
-                    },
-                    new()
-                    {
-                        Name = "Smith",
-                        Tels = new[] {"1234", "5678"}
-                    }
-                },
-                PersonArray = new[]
-                {
-                    new Person
-                    {
-                        Name = "John2",
-                        Tels = null
-                    },
-                    new Person
-                    {
-                        Name = "Mark2",
-                        Tels = new[] {"123456"}
-                    },
-                    new Person
-                    {
-                        Name = "Smith2",
-                        Tels = new[] {"1234", "5678"}
-                    }
-                }
-            };
-        }
-
-        public static TestClass CreateSample2()
-        {
-            return new TestClass
-            {
-                BoolData = true,
-                CharData = 'a',
-                SbyteData = -12,
-                ByteData = 12,
-                ShortData = -34,
-                UshortData = 34,
-                IntData = -1120,
-                UintData = 1120,
-                LongData = -3450,
-                UlongData = 3450,
-                FloatData = (float) 12.3,
-                DoubleData = -45.78,
-                DecimalData = (decimal) 123.456,
-                DateTimeData = new DateTime(2000, 2, 2),
-                StringData = "Test String",
-                NBoolData = null,
-                NCharData = 'a',
-                NSbyteData = null,
-                NByteData = 12,
-                NShortData = null,
-                NUshortData = 34,
-                NIntData = null,
-                NUintData = 1120,
-                NLongData = null,
-                NUlongData = 3450,
-                NFloatData = null,
-                NDoubleData = -45.78,
-                NDecimalData = null,
-                NDateTimeData = new DateTime(2000, 2, 2),
-                IntListData = new List<int> {1, 2, 3, 4, 5},
-                IntArrayData = new[] {6, 7, 8, 9, 10},
-                StringListData = new List<string> {"123", "abc", null, "Test"},
-                StringArrayData = new[] {"XYZ", null, "456", "Hello World!"},
-                Person = new Person
-                {
-                    Name = "Ali",
-                    Tels = new[] {"12", "34", "56"}
-                },
-                PersonList = new List<Person>
-                {
-                    new()
-                    {
-                        Name = "John2",
-                        Tels = null
-                    },
-                    new()
-                    {
-                        Name = "Mark2",
-                        Tels = new[] {"123456"}
-                    },
-                    new()
-                    {
-                        Name = "Smith2",
-                        Tels = new[] {"1234", "5678"}
-                    }
-                },
-                PersonArray = new[]
-                {
-                    new Person
-                    {
-                        Name = "John2",
-                        Tels = null
-                    },
-                    new Person
-                    {
-                        Name = "Mark2",
-                        Tels = new[] {"123456"}
-                    },
-                    new Person
-                    {
-                        Name = "Smith2",
-                        Tels = new[] {"1234", "5678"}
-                    }
-                }
-            };
-        }
+        // public Person[] PersonArray { get; set; }
 
         public bool IsEqual(TestClass c)
         {
@@ -274,15 +112,177 @@ namespace QsonTester
             if (NDateTimeData != null && c.NDateTimeData != null && NDateTimeData.Value != c.NDateTimeData.Value) return false;
 
             if (!IntListIsEqual(IntListData, c.IntListData)) return false;
-            if (!IntArrayIsEqual(IntArrayData, c.IntArrayData)) return false;
+            // if (!IntArrayIsEqual(IntArrayData, c.IntArrayData)) return false;
             if (!StringListIsEqual(StringListData, c.StringListData)) return false;
-            if (!StringArrayIsEqual(StringArrayData, c.StringArrayData)) return false;
+            // if (!StringArrayIsEqual(StringArrayData, c.StringArrayData)) return false;
 
             if (!Person.IsEqual(c.Person)) return false;
             if (!PersonListIsEqual(PersonList, c.PersonList)) return false;
-            if (!PersonArrayIsEqual(PersonArray, c.PersonArray)) return false;
+            // if (!PersonArrayIsEqual(PersonArray, c.PersonArray)) return false;
 
             return true;
+        }
+
+        public static TestClass CreateSample1()
+        {
+            return new TestClass
+            {
+                BoolData = true,
+                CharData = 'a',
+                SbyteData = -12,
+                ByteData = 12,
+                ShortData = -34,
+                UshortData = 34,
+                IntData = -1120,
+                UintData = 1120,
+                LongData = -3450,
+                UlongData = 3450,
+                FloatData = (float) 12.3,
+                DoubleData = -45.78,
+                DecimalData = (decimal) 123.456,
+                DateTimeData = new DateTime(2000, 2, 2),
+                StringData = "Test String",
+                NBoolData = true,
+                NCharData = null,
+                NSbyteData = -12,
+                NByteData = null,
+                NShortData = -34,
+                NUshortData = null,
+                NIntData = -1120,
+                NUintData = null,
+                NLongData = -3450,
+                NUlongData = null,
+                NFloatData = (float) 12.3,
+                NDoubleData = null,
+                NDecimalData = (decimal) 123.456,
+                NDateTimeData = null,
+                IntListData = new List<int> {1, 2, 3, 4, 5},
+                // IntArrayData = new[] {6, 7, 8, 9, 10},
+                StringListData = new List<string> {"123", "abc", null, "Test"},
+                // StringArrayData = new[] {"XYZ", null, "456", "Hello World!"},
+                Person = new Person
+                {
+                    Name = "Ali",
+                    Tels = new List<string> {"12", "34", "56"}
+                },
+                PersonList = new List<Person>
+                {
+                    new()
+                    {
+                        Name = "John",
+                        Tels = null
+                    },
+                    new()
+                    {
+                        Name = "Mark",
+                        Tels = new List<string> {"123456"}
+                    },
+                    new()
+                    {
+                        Name = "Smith",
+                        Tels = new List<string> {"1234", "5678"}
+                    }
+                },
+                // PersonArray = new[]
+                // {
+                //     new Person
+                //     {
+                //         Name = "John2",
+                //         Tels = null
+                //     },
+                //     new Person
+                //     {
+                //         Name = "Mark2",
+                //         Tels = new[] {"123456"}
+                //     },
+                //     new Person
+                //     {
+                //         Name = "Smith2",
+                //         Tels = new[] {"1234", "5678"}
+                //     }
+                // }
+            };
+        }
+
+        public static TestClass CreateSample2()
+        {
+            return new TestClass
+            {
+                BoolData = true,
+                CharData = 'a',
+                SbyteData = -12,
+                ByteData = 12,
+                ShortData = -34,
+                UshortData = 34,
+                IntData = -1120,
+                UintData = 1120,
+                LongData = -3450,
+                UlongData = 3450,
+                FloatData = (float) 12.3,
+                DoubleData = -45.78,
+                DecimalData = (decimal) 123.456,
+                DateTimeData = new DateTime(2000, 2, 2),
+                StringData = "Test String",
+                NBoolData = null,
+                NCharData = 'a',
+                NSbyteData = null,
+                NByteData = 12,
+                NShortData = null,
+                NUshortData = 34,
+                NIntData = null,
+                NUintData = 1120,
+                NLongData = null,
+                NUlongData = 3450,
+                NFloatData = null,
+                NDoubleData = -45.78,
+                NDecimalData = null,
+                NDateTimeData = new DateTime(2000, 2, 2),
+                IntListData = new List<int> {1, 2, 3, 4, 5},
+                // IntArrayData = new[] {6, 7, 8, 9, 10},
+                StringListData = new List<string> {"123", "abc", null, "Test"},
+                // StringArrayData = new[] {"XYZ", null, "456", "Hello World!"},
+                Person = new Person
+                {
+                    Name = "Ali",
+                    Tels = new List<string> {"12", "34", "56"}
+                },
+                PersonList = new List<Person>
+                {
+                    new()
+                    {
+                        Name = "John2",
+                        Tels = null
+                    },
+                    new()
+                    {
+                        Name = "Mark2",
+                        Tels = new List<string> {"123456"}
+                    },
+                    new()
+                    {
+                        Name = "Smith2",
+                        Tels = new List<string> {"1234", "5678"}
+                    }
+                },
+                // PersonArray = new[]
+                // {
+                //     new Person
+                //     {
+                //         Name = "John2",
+                //         Tels = null
+                //     },
+                //     new Person
+                //     {
+                //         Name = "Mark2",
+                //         Tels = new[] {"123456"}
+                //     },
+                //     new Person
+                //     {
+                //         Name = "Smith2",
+                //         Tels = new[] {"1234", "5678"}
+                //     }
+                // }
+            };
         }
 
         private bool IntListIsEqual(List<int> list1, List<int> list2)

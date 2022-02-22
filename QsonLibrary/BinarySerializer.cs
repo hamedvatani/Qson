@@ -23,7 +23,7 @@ namespace QsonLibrary
                 var res = value.ToByteArray(property.PropertyType);
 
                 if (res == null)
-                    throw new Exception($"{property.PropertyType} {property.Name} type not supported");
+                    throw new Exception($"{property.PropertyType} {property.Name} type not supported in Serializer");
 
                 retVal = retVal.Concat(res);
             }
@@ -48,7 +48,7 @@ namespace QsonLibrary
         private static byte[] ToByteArray(this object data, Type type)
         {
             // Primitive
-            if (type.IsPrimitive || type == typeof(string))
+            if (type.IsPrimitive || type == typeof(decimal) || type == typeof(DateTime) || type == typeof(string))
                 return data.PrimitiveToByteArray(type);
             // Nullable
             if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Nullable<>))
@@ -58,23 +58,49 @@ namespace QsonLibrary
                 return data.ListToByteArray(type);
             // Array, not supported now
             // Custom
-            if (type.IsClass)
+            if (!type.IsArray)
                 return data.BinarySerialize();
             return null;
         }
 
         private static byte[] PrimitiveToByteArray(this object data, Type type)
         {
+            if (type == typeof(bool))
+                return BitConverter.GetBytes((bool)data);
+            if (type == typeof(char))
+                return BitConverter.GetBytes((char)data);
+            if (type == typeof(sbyte))
+                return BitConverter.GetBytes((sbyte)data);
+            if (type == typeof(byte))
+                return BitConverter.GetBytes((byte)data);
+            if (type == typeof(short))
+                return BitConverter.GetBytes((short)data);
+            if (type == typeof(ushort))
+                return BitConverter.GetBytes((ushort)data);
             if (type == typeof(int))
                 return BitConverter.GetBytes((int)data);
+            if (type == typeof(uint))
+                return BitConverter.GetBytes((uint)data);
             if (type == typeof(long))
                 return BitConverter.GetBytes((long)data);
+            if (type == typeof(ulong))
+                return BitConverter.GetBytes((ulong)data);
+            if (type == typeof(float))
+                return BitConverter.GetBytes((float)data);
+            if (type == typeof(double))
+                return BitConverter.GetBytes((double)data);
+            if (type == typeof(decimal))
+                return BitConverter.GetBytes(decimal.ToDouble((decimal)data));
+            if (type == typeof(DateTime))
+                return BitConverter.GetBytes(((DateTime)data).Ticks);
             if (type == typeof(string))
             {
+                if (data == null)
+                    return new byte[] { 0 };
                 var str = (string)data;
                 var len = BitConverter.GetBytes(str.Length);
                 var val = Encoding.UTF8.GetBytes(str);
-                return len.Concat(val);
+                return new byte[] { 1 }.Concat(len).Concat(val);
             }
 
             return null;
@@ -135,7 +161,7 @@ namespace QsonLibrary
             {
                 var value = bytes.GetValue(property.PropertyType, out int len);
                 if (len == 0)
-                    throw new Exception($"{property.PropertyType} {property.Name} type not supported");
+                    throw new Exception($"{property.PropertyType} {property.Name} type not supported in Deserializer");
                 length += len;
                 property.SetValue(retVal, value);
 
@@ -157,7 +183,7 @@ namespace QsonLibrary
         private static object GetValue(this byte[] data, Type type, out int length)
         {
             // Primitive
-            if (type.IsPrimitive || type == typeof(string))
+            if (type.IsPrimitive || type == typeof(decimal) || type == typeof(DateTime) || type == typeof(string))
                 return data.GetPrimitiveValue(type, out length);
             // Nullable
             if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Nullable<>))
@@ -167,7 +193,7 @@ namespace QsonLibrary
                 return data.GetListValue(type, out length);
             // Array, not supported now
             // Custom
-            if (type.IsClass)
+            if (!type.IsArray)
                 return data.BinaryDeserialize(type, out length);
             length = 0;
             return null;
@@ -175,25 +201,88 @@ namespace QsonLibrary
         
         private static object GetPrimitiveValue(this byte[] data, Type type, out int length)
         {
+            if (type == typeof(bool))
+            {
+                length = BitConverter.GetBytes(false).Length;
+                return BitConverter.ToBoolean(data, 0);
+            }
+            if (type == typeof(char))
+            {
+                length = BitConverter.GetBytes('a').Length;
+                return BitConverter.ToChar(data, 0);
+            }
+            if (type == typeof(sbyte))
+            {
+                length = BitConverter.GetBytes((sbyte)0).Length;
+                return (sbyte)data[0];
+            }
+            if (type == typeof(byte))
+            {
+                length = BitConverter.GetBytes((byte)0).Length;
+                return data[0];
+            }
+            if (type == typeof(short))
+            {
+                length = BitConverter.GetBytes((short)0).Length;
+                return BitConverter.ToInt16(data, 0);
+            }
+            if (type == typeof(ushort))
+            {
+                length = BitConverter.GetBytes((ushort)0).Length;
+                return BitConverter.ToUInt16(data, 0);
+            }
             if (type == typeof(int))
             {
-                int dummy = 0;
-                length = BitConverter.GetBytes(dummy).Length;
+                length = BitConverter.GetBytes(0).Length;
                 return BitConverter.ToInt32(data, 0);
             }
-
+            if (type == typeof(uint))
+            {
+                length = BitConverter.GetBytes((uint)0).Length;
+                return BitConverter.ToUInt32(data, 0);
+            }
             if (type == typeof(long))
             {
-                long dummy = 0;
-                length = BitConverter.GetBytes(dummy).Length;
+                length = BitConverter.GetBytes((long)0).Length;
                 return BitConverter.ToInt64(data, 0);
             }
-
+            if (type == typeof(ulong))
+            {
+                length = BitConverter.GetBytes((ulong)0).Length;
+                return BitConverter.ToUInt64(data, 0);
+            }
+            if (type == typeof(float))
+            {
+                length = BitConverter.GetBytes((float)0).Length;
+                return BitConverter.ToSingle(data, 0);
+            }
+            if (type == typeof(double))
+            {
+                length = BitConverter.GetBytes((double)0).Length;
+                return BitConverter.ToDouble(data, 0);
+            }
+            if (type == typeof(decimal))
+            {
+                length = BitConverter.GetBytes((double)0).Length;
+                return (decimal)BitConverter.ToDouble(data, 0);
+            }
+            if (type == typeof(DateTime))
+            {
+                length = BitConverter.GetBytes((long)0).Length;
+                var ticks = BitConverter.ToInt64(data, 0);
+                return new DateTime(ticks);
+            }
             if (type == typeof(string))
             {
-                var strLength = BitConverter.ToInt32(data, 0);
-                length = strLength + 4;
-                return Encoding.UTF8.GetString(data, 4, strLength);
+                if (data[0] == 0)
+                {
+                    length = 1;
+                    return null;
+                }
+
+                var strLength = BitConverter.ToInt32(data, 1);
+                length = strLength + 5;
+                return Encoding.UTF8.GetString(data, 5, strLength);
             }
 
             length = 0;
