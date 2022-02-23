@@ -2,8 +2,13 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Data.Common;
+using System.Drawing;
+using System.Drawing.Imaging;
+using System.IO;
 using System.Linq;
 using System.Text;
+using QRCodeDecoderLibrary;
+using QRCoder;
 using QsonLibrary;
 
 namespace QsonTester
@@ -87,6 +92,24 @@ namespace QsonTester
                 Console.WriteLine(ex);
             }
 
+            var bytes = new byte[500];
+            for (int i = 0; i < bytes.Length; i++)
+                bytes[i] = (byte) (i % byte.MaxValue);
+            var res = bytes.ToQrCode(20);
+
+            #if DEBUG
+            // current directory
+            string CurDir = Environment.CurrentDirectory;
+            string WorkDir = CurDir.Replace("bin\\Debug", "Work");
+            if (WorkDir != CurDir && Directory.Exists(WorkDir)) Environment.CurrentDirectory = WorkDir;
+
+            // open trace file
+            QRCodeTrace.Open("QRCodeDecoderTrace.txt");
+            QRCodeTrace.Write("QRCodeDecoderDemo");
+            #endif
+            
+            QRDecoder decoder = new QRDecoder();
+            var rrr=decoder.ImageDecoder(res[0]);
         }
     }
 }

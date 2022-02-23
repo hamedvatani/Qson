@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Text;
 
@@ -31,7 +32,7 @@ namespace QsonLibrary
             return retVal;
         }
 
-        private static byte[] Concat(this byte[] arr1, byte[] arr2)
+        public static byte[] Concat(this byte[] arr1, byte[] arr2)
         {
             if (arr1 == null && arr2 == null)
                 return null;
