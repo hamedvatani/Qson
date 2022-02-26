@@ -21,7 +21,7 @@ namespace QsonTester
             {
                 Data1 = 10,
                 Data2 = 20,
-                Data3 = "Sample Text",
+                Data3 = "متن تستی",
                 Data4 = 1234,
                 Data5 = new List<int> {1, 2, 3},
                 Data6 = new List<int?> {1, null, 3},

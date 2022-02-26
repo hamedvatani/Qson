@@ -141,7 +141,7 @@ namespace QsonTester
                 DoubleData = -45.78,
                 DecimalData = (decimal) 123.456,
                 DateTimeData = new DateTime(2000, 2, 2),
-                StringData = "Test String",
+                StringData = "متن تستی",
                 NBoolData = true,
                 NCharData = null,
                 NSbyteData = -12,
@@ -163,7 +163,7 @@ namespace QsonTester
                 Person = new Person
                 {
                     Name = "Ali",
-                    Tels = new List<string> {"12", "34", "56"}
+                    Tels = new List<string> {"12", "حسن", "علی"}
                 },
                 PersonList = new List<Person>
                 {
@@ -175,7 +175,7 @@ namespace QsonTester
                     new()
                     {
                         Name = "Mark",
-                        Tels = new List<string> {"123456"}
+                        Tels = new List<string> {"سلامت کار"}
                     },
                     new()
                     {
@@ -239,7 +239,7 @@ namespace QsonTester
                 NDateTimeData = new DateTime(2000, 2, 2),
                 IntListData = new List<int> {1, 2, 3, 4, 5},
                 // IntArrayData = new[] {6, 7, 8, 9, 10},
-                StringListData = new List<string> {"123", "abc", null, "Test"},
+                StringListData = new List<string> {"حسین", "abc", null, "کبوتر"},
                 // StringArrayData = new[] {"XYZ", null, "456", "Hello World!"},
                 Person = new Person
                 {
@@ -255,13 +255,13 @@ namespace QsonTester
                     },
                     new()
                     {
-                        Name = "Mark2",
+                        Name = "محمد",
                         Tels = new List<string> {"123456"}
                     },
                     new()
                     {
                         Name = "Smith2",
-                        Tels = new List<string> {"1234", "5678"}
+                        Tels = new List<string> {"کتایون", "5678"}
                     }
                 },
                 // PersonArray = new[]

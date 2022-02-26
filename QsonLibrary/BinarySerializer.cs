@@ -99,8 +99,8 @@ namespace QsonLibrary
                 if (data == null)
                     return new byte[] { 0 };
                 var str = (string)data;
-                var len = BitConverter.GetBytes(str.Length);
                 var val = Encoding.UTF8.GetBytes(str);
+                var len = BitConverter.GetBytes(val.Length);
                 return new byte[] { 1 }.Concat(len).Concat(val);
             }
 
