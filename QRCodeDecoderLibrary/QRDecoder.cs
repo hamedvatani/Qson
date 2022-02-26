@@ -287,9 +287,6 @@ public class QRDecoder
 			Bitmap	InputImage
 			)
 		{
-		#if DEBUG
-		int Start;
-		#endif
 		try
 			{
 			// empty data string output
@@ -299,58 +296,23 @@ public class QRDecoder
 			ImageWidth = InputImage.Width;
 			ImageHeight = InputImage.Height;
 
-			#if DEBUG
-			Start = Environment.TickCount;
-			QRCodeTrace.Write("Convert image to black and white");
-			#endif
 
 			// convert input image to black and white boolean image
 			if(!ConvertImageToBlackAndWhite(InputImage)) return null;
 
-			#if DEBUG
-			QRCodeTrace.Format("Time: {0}", Environment.TickCount - Start);
-			QRCodeTrace.Write("Finders search");
-			#endif
-
 			// horizontal search for finders
 			if(!HorizontalFindersSearch()) return null;
-
-			#if DEBUG
-			QRCodeTrace.Format("Horizontal Finders count: {0}", FinderList.Count);
-			#endif
 
 			// vertical search for finders
 			VerticalFindersSearch();
 
-			#if DEBUG
-			int MatchedCount = 0;
-			foreach(Finder HF in FinderList) if(HF.Distance != double.MaxValue) MatchedCount++;
-			QRCodeTrace.Format("Matched Finders count: {0}", MatchedCount);
-			QRCodeTrace.Write("Remove all unused finders");
-			#endif
-
 			// remove unused finders
 			if(!RemoveUnusedFinders()) return null;
-
-			#if DEBUG
-			QRCodeTrace.Format("Time: {0}", Environment.TickCount - Start);
-			foreach(Finder HF in FinderList) QRCodeTrace.Write(HF.ToString());
-			QRCodeTrace.Write("Search for QR corners");
-			#endif
 			}
-
-		#if DEBUG
-		catch (Exception Ex)
-			{
-			QRCodeTrace.Write("QR Code decoding failed (no finders). " + Ex.Message);
-			return null;
-			}
-		#else
 		catch
 			{
 			return null;
 			}
-		#endif
 
 		// look for all possible 3 finder patterns
 		int Index1End = FinderList.Count - 2;
@@ -368,19 +330,9 @@ public class QRDecoder
 				// not a valid corner
 				if(Corner == null) continue;
 
-				#if DEBUG
-				QRCodeTrace.Format("Decode Corner: Top Left:    {0}", Corner.TopLeftFinder.ToString());
-				QRCodeTrace.Format("Decode Corner: Top Right:   {0}", Corner.TopRightFinder.ToString());
-				QRCodeTrace.Format("Decode Corner: Bottom Left: {0}", Corner.BottomLeftFinder.ToString());
-				#endif
-
 				// get corner info (version, error code and mask)
 				// continue if failed
 				if(!GetQRCodeCornerInfo(Corner)) continue;
-
-				#if DEBUG
-				QRCodeTrace.Write("Decode QR code using three finders");
-				#endif
 
 				// decode corner using three finders
 				// continue if successful
@@ -397,10 +349,6 @@ public class QRDecoder
 				// decode using 4 points
 				foreach(Finder Align in AlignList)
 					{
-					#if DEBUG
-					QRCodeTrace.Format("Calculated alignment mark: Row {0}, Col {1}", Align.Row, Align.Col);
-					#endif
-
 					// calculate transformation based on 3 finders and bottom right alignment mark
 					SetTransMatrix(Corner, Align.Row, Align.Col);
 
@@ -409,30 +357,15 @@ public class QRDecoder
 					}
 				}
 
-			#if DEBUG
-			catch (Exception Ex)
-				{
-				QRCodeTrace.Write("Decode corner failed. " + Ex.Message);
-				continue;
-				}
-			#else
 			catch
 				{
 				continue;
 				}
-			#endif
 			}
 	
-		#if DEBUG
-		QRCodeTrace.Format("Time: {0}", Environment.TickCount - Start);
-		#endif
-
 		// not found exit
 		if(DataArrayList.Count == 0)
 			{
-			#if DEBUG
-			QRCodeTrace.Write("No QR Code found");
-			#endif
 			return null;
 			}
 
@@ -460,9 +393,6 @@ public class QRDecoder
 		int ScanLineWidth = BitmapData.Stride;
 		if(ScanLineWidth < 0)
 			{
-			#if DEBUG
-			QRCodeTrace.Write("Convert image to back and white array. Invalid input image format (upside down).");
-			#endif
 			return false;
 			}
 
@@ -503,9 +433,6 @@ public class QRDecoder
 		LevelEnd++;
 		if(LevelEnd - LevelStart < 2)
 			{
-			#if DEBUG
-			QRCodeTrace.Write("Convert image to back and white array. Input image has no color variations");
-			#endif
 			return false;
 			}
 
@@ -518,10 +445,6 @@ public class QRDecoder
 				BlackWhiteImage[Row, Col] = GrayImage[Row, Col] < CutoffLevel;
 
 		// save as black white image
-		#if DEBUGEX
-		QRCodeTrace.Write("Display black and white image");
-		DisplayBlackAndWhiteImage();
-		#endif
 
 		// exit;
 		return true;
@@ -530,37 +453,6 @@ public class QRDecoder
 	////////////////////////////////////////////////////////////////////
 	// Save and display black and white boolean image as png image
 	////////////////////////////////////////////////////////////////////
-
-	#if DEBUGX
-	internal void DisplayBlackAndWhiteImage()
-		{
-		int ModuleSize = Math.Min(16384 / Math.Max(ImageHeight, ImageWidth), 1);
-		SolidBrush BrushWhite = new SolidBrush(Color.White);
-		SolidBrush BrushBlack = new SolidBrush(Color.Black);
-		Bitmap Image = new Bitmap(ImageWidth * ModuleSize, ImageHeight * ModuleSize);
-		Graphics Graphics = Graphics.FromImage(Image);
-		Graphics.FillRectangle(BrushWhite, 0, 0, ImageWidth * ModuleSize, ImageHeight * ModuleSize);
-		for(int Row = 0; Row < ImageHeight; Row++) for(int Col = 0; Col < ImageWidth; Col++)
-			{
-			if(BlackWhiteImage[Row, Col]) Graphics.FillRectangle(BrushBlack, Col * ModuleSize, Row * ModuleSize, ModuleSize, ModuleSize);
-			}
-		string FileName = "DecodeImage.png";
-		try
-			{
-			FileStream fs = new FileStream(FileName, FileMode.Create);
-			Image.Save(fs, ImageFormat.Png);
-			fs.Close();
-			}
-		catch(IOException)
-			{
-			FileName = null;
-			}
-
-		// start image editor
-		if(FileName != null) Process.Start(FileName);
-		return;
-		}
-	#endif
 
 	////////////////////////////////////////////////////////////////////
 	// search row by row for finders blocks
@@ -622,9 +514,6 @@ public class QRDecoder
 		// no finders found
 		if(FinderList.Count < 3)
 			{
-			#if DEBUG
-			QRCodeTrace.Write("Horizontal finders search. Less than 3 finders found");
-			#endif
 			return false;
 			}
 
@@ -700,9 +589,6 @@ public class QRDecoder
 			}
 
 		// list is now empty or has less than three finders
-		#if DEBUG
-		if(AlignList.Count == 0) QRCodeTrace.Write("Vertical align search.\r\nNo finders found");
-		#endif
 
 		// exit
 		return AlignList.Count != 0;
@@ -879,9 +765,6 @@ public class QRDecoder
 		// list is now empty or has less than three finders
 		if(FinderList.Count < 3)
 			{
-			#if DEBUG
-			QRCodeTrace.Write("Remove unmatched finders. Less than 3 finders found");
-			#endif
 			return false;
 			}
 
@@ -906,9 +789,6 @@ public class QRDecoder
 		// list is now empty or has less than three finders
 		if(FinderList.Count < 3)
 			{
-			#if DEBUG
-			QRCodeTrace.Write("Keep best matched finders. Less than 3 finders found");
-			#endif
 			return false;
 			}
 
@@ -951,10 +831,6 @@ public class QRDecoder
 			}
 
 		// list is now empty or has less than three finders
-		#if DEBUG
-		if(AlignList.Count == 0)
-			QRCodeTrace.Write("Remove unused alignment marks.\r\nNo alignment marks found");
-		#endif
 
 		// exit
 		return AlignList.Count != 0;
@@ -1049,10 +925,6 @@ public class QRDecoder
 			// qr code dimension
 			QRCodeDimension = 17 + 4 * QRCodeVersion;
 
-			#if DEBUG
-			QRCodeTrace.Format("Initial version number: {0}, dimension: {1}", QRCodeVersion, QRCodeDimension);
-			#endif
-
 			// set transformation matrix
 			SetTransMatrix(Corner);
 
@@ -1075,10 +947,6 @@ public class QRDecoder
 					// qr code dimension
 					QRCodeDimension = 17 + 4 * QRCodeVersion;
 
-					#if DEBUG
-					QRCodeTrace.Format("Updated version number: {0}, dimension: {1}", QRCodeVersion, QRCodeDimension);
-					#endif
-
 					// set transformation matrix
 					SetTransMatrix(Corner);
 					}
@@ -1100,21 +968,11 @@ public class QRDecoder
 			return true;
 			}
 
-		#if DEBUG
-		catch (Exception Ex)
-			{
-			QRCodeTrace.Format("Get QR Code corner info exception.\r\n{0}", Ex.Message);
-
-			// failed exit
-			return false;
-			}
-		#else
 		catch
 			{
 			// failed exit
 			return false;
 			}
-		#endif
 		}
 
 	////////////////////////////////////////////////////////////////////
@@ -1156,33 +1014,15 @@ public class QRDecoder
 			DataArrayList.Add(DataArray);
 
 			// trace
-			#if DEBUG
-			string DataString = ByteArrayToStr(DataArray);
-			QRCodeTrace.Format("Version: {0}, Dim: {1}, ErrCorr: {2}, Generator: {3}, Mask: {4}, Group1: {5}:{6}, Group2: {7}:{8}",
-				QRCodeVersion.ToString(), QRCodeDimension.ToString(), ErrorCorrection.ToString(), ErrCorrCodewords.ToString(), MaskCode.ToString(),
-				BlocksGroup1.ToString(), DataCodewordsGroup1.ToString(), BlocksGroup2.ToString(), DataCodewordsGroup2.ToString());
-			QRCodeTrace.Format("Data: {0}", DataString);
-			#endif
-
 			// successful exit
 			return true;
 			}
 
-		#if DEBUG
-		catch (Exception Ex)
-			{
-			QRCodeTrace.Format("Decode QR code exception.\r\n{0}", Ex.Message);
-
-			// failed exit
-			return false;
-			}
-		#else
 		catch
 			{
 			// failed exit
 			return false;
 			}
-		#endif
 		}
 
 	internal void SetTransMatrix
@@ -1320,10 +1160,6 @@ public class QRDecoder
 		int ImageCol = (int) Math.Round(Trans3a * AlignCol + Trans3c * AlignRow + Trans3e, 0, MidpointRounding.AwayFromZero);
 		int ImageRow = (int) Math.Round(Trans3b * AlignCol + Trans3d * AlignRow + Trans3f, 0, MidpointRounding.AwayFromZero);
 
-		#if DEBUG
-		QRCodeTrace.Format("Estimated alignment mark: Row {0}, Col {1}", ImageRow, ImageCol);
-		#endif
-
 		// search area
 		int Side = (int) Math.Round(ALIGNMENT_SEARCH_AREA * (Corner.TopLineLength + Corner.LeftLineLength), 0, MidpointRounding.AwayFromZero);
 		
@@ -1331,10 +1167,6 @@ public class QRDecoder
 		int AreaTop = ImageRow - Side / 2;
 		int AreaWidth = Side;
 		int AreaHeight = Side;
-
-		#if DEBUGEX
-		DisplayBottomRightCorder(AreaLeft, AreaTop, AreaWidth, AreaHeight);
-		#endif
 
 		// horizontal search for finders
 		if(!HorizontalAlignmentSearch(AreaLeft, AreaTop, AreaWidth, AreaHeight)) return false;
@@ -1503,9 +1335,6 @@ public class QRDecoder
 		// test for exact match
 		if(Code >= 7 && Code <= 40 && StaticTables.VersionCodeArray[Code - 7] == VersionCode)
 			{
-			#if DEBUG
-			QRCodeTrace.Format("Version code exact match: {0:X4}, Version: {1}", VersionCode, Code);
-			#endif
 			return Code;
 			}
 
@@ -1528,14 +1357,6 @@ public class QRDecoder
 				BestInfo = Index;
 				}
 			}
-
-		#if DEBUG
-		if(Error <= 3)
-			QRCodeTrace.Format("Version code match with errors: {0:X4}, Version: {1}, Errors: {2}",
-				VersionCode, BestInfo + 7, Error);
-		else
-			QRCodeTrace.Format("Version code no match: {0:X4}", VersionCode);
-		#endif
 
 		return Error <= 3 ? BestInfo + 7 : 0;
 		}
@@ -1587,10 +1408,6 @@ public class QRDecoder
 		// test for exact match
 		if(StaticTables.FormatInfoArray[Info] == FormatInfo)
 			{
-			#if DEBUG
-			QRCodeTrace.Format("Format info exact match: {0:X4}, EC: {1}, mask: {2}",
-				FormatInfo, FormatInfoToErrCode(Info >> 3).ToString(), Info & 7);
-			#endif
 			return Info;
 			}
 
@@ -1607,14 +1424,6 @@ public class QRDecoder
 				}
 			}
 
-		#if DEBUG
-		if(Error <= 3)
-			QRCodeTrace.Format("Format info match with errors: {0:X4}, EC: {1}, mask: {2}, errors: {3}",
-				FormatInfo, FormatInfoToErrCode(Info >> 3).ToString(), Info & 7, Error);
-		else
-			QRCodeTrace.Format("Format info no match: {0:X4}", FormatInfo);
-
-		#endif
 		return Error <= 3 ? BestInfo : -1;
 		}
 
@@ -1660,20 +1469,6 @@ public class QRDecoder
 				}
 			}
 
-		#if DEBUG
-		if(ErrorCount == 0)
-			{
-			QRCodeTrace.Write("Fixed modules no error");
-			}
-		else if(ErrorCount <= FixedCount * ErrCorrPercent[(int) ErrorCorrection] / 100)
-			{
-			QRCodeTrace.Format("Fixed modules some errors: {0} / {1}", ErrorCount, FixedCount);
-			}
-		else
-			{
-			QRCodeTrace.Format("Fixed modules too many errors: {0} / {1}", ErrorCount, FixedCount);
-			}
-		#endif
 		if(ErrorCount > FixedCount * ErrCorrPercent[(int) ErrorCorrection] / 100)
 			throw new ApplicationException("Fixed modules error"); 			
 		return;
@@ -1898,10 +1693,6 @@ public class QRDecoder
 			CodewordsArrayErrCorrPtr += ErrCorrCodewords;
 			}
 
-		#if DEBUG
-		if(TotalErrorCount == 0) QRCodeTrace.Write("No data errors");
-		else QRCodeTrace.Write("Error correction applied to data. Total errors: " + TotalErrorCount.ToString());
-		#endif
 		return;
 		}
 

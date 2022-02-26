@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
+using QRCodeDecoderLibrary;
 using QRCoder;
 
 namespace QsonLibrary
@@ -43,18 +44,32 @@ namespace QsonLibrary
             return retVal;
         }
 
-        public static byte[] FromQrCode(this Bitmap[] images)
+        public static byte[] ToByteArray(this Bitmap[] images)
         {
+            var decodedData = new List<Tuple<int, bool, byte[]>>();
 
-            return null;
+            foreach (var image in images)
+            {
+                QRDecoder decoder = new QRDecoder();
+                var res = decoder.ImageDecoder(image);
+                if (res == null || res.Length == 0 || res[0].Length < 3)
+                    throw new Exception("Invalid image");
+                decodedData.Add(new Tuple<int, bool, byte[]>(res[0][0], res[0][1] != 0, res[0].Separate(2)));
+            }
 
-            // var options = new DecodingOptions { PossibleFormats = new List<BarcodeFormat> { BarcodeFormat.QR_CODE }, TryHarder = true };
-            // var reader = new BarcodeReader(null, null, ls => new GlobalHistogramBinarizer(ls)) { AutoRotate = false, TryInverted = false, Options = options };
-            // var result = reader.Decode(image);
+            decodedData.Sort((x, y) => x.Item1.CompareTo(y.Item1));
 
+            for (int i = 0; i < decodedData.Count; i++)
+                if (decodedData[i].Item1 != i)
+                    throw new Exception("Images are not complete");
+            if (!decodedData[^1].Item2)
+                throw new Exception("Last Image missing");
 
+            var retVal = Array.Empty<byte>();
+            for (int i = 0; i < decodedData.Count; i++)
+                retVal = retVal.Concat(decodedData[i].Item3);
 
-
+            return retVal;
         }
     }
 }

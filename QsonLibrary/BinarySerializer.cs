@@ -172,7 +172,7 @@ namespace QsonLibrary
             return retVal;
         }
         
-        private static byte[] Separate(this byte[] arr, int length)
+        public static byte[] Separate(this byte[] arr, int length)
         {
             if (arr == null)
                 return null;

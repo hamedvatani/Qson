@@ -91,25 +91,80 @@ namespace QsonTester
             {
                 Console.WriteLine(ex);
             }
+            Console.WriteLine();
 
             var bytes = new byte[500];
             for (int i = 0; i < bytes.Length; i++)
                 bytes[i] = (byte) (i % byte.MaxValue);
             var res = bytes.ToQrCode(20);
+            var dbytes = res.ToByteArray();
+            var r = true;
+            for (int i = 0; i < dbytes.Length; i++)
+                if (dbytes[i] != bytes[i])
+                {
+                    r = false;
+                    return;
+                }
 
-            #if DEBUG
-            // current directory
-            string CurDir = Environment.CurrentDirectory;
-            string WorkDir = CurDir.Replace("bin\\Debug", "Work");
-            if (WorkDir != CurDir && Directory.Exists(WorkDir)) Environment.CurrentDirectory = WorkDir;
+            Console.WriteLine(r);
 
-            // open trace file
-            QRCodeTrace.Open("QRCodeDecoderTrace.txt");
-            QRCodeTrace.Write("QRCodeDecoderDemo");
-            #endif
-            
-            QRDecoder decoder = new QRDecoder();
-            var rrr=decoder.ImageDecoder(res[0]);
+            bytes = new byte[5000];
+            for (int i = 0; i < bytes.Length; i++)
+                bytes[i] = (byte)(i % byte.MaxValue);
+            res = bytes.ToQrCode(20);
+            dbytes = res.ToByteArray();
+            r = true;
+            for (int i = 0; i < dbytes.Length; i++)
+                if (dbytes[i] != bytes[i])
+                {
+                    r = false;
+                    return;
+                }
+            Console.WriteLine();
+
+            var res2 = new Bitmap[res.Length - 1];
+            for (int i = 0; i < res2.Length; i++)
+                res2[i] = res[i + 1];
+            try
+            {
+                dbytes = res2.ToByteArray();
+                r = true;
+                for (int i = 0; i < dbytes.Length; i++)
+                    if (dbytes[i] != bytes[i])
+                    {
+                        r = false;
+                        return;
+                    }
+
+                Console.WriteLine(r);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+            Console.WriteLine();
+
+            var res3 = new Bitmap[res.Length - 1];
+            for (int i = 0; i < res3.Length; i++)
+                res3[i] = res[i];
+            try
+            {
+                dbytes = res3.ToByteArray();
+                r = true;
+                for (int i = 0; i < dbytes.Length; i++)
+                    if (dbytes[i] != bytes[i])
+                    {
+                        r = false;
+                        return;
+                    }
+
+                Console.WriteLine(r);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+            Console.WriteLine();
         }
     }
 }
